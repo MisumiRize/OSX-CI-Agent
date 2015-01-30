@@ -3,9 +3,5 @@ no-response-timeout: 15
 build:
   steps:
     - script:
-    - script:
-        name: boot and provision
-        code: make
-    - script:
-        name: serverspec test
-        code: make test
+        name: itamae provision and serverspec test
+        code: make clean-test

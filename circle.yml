@@ -3,7 +3,5 @@ machine:
     - docker
 
 test:
-  pre:
-    - make
   override:
-    - make test
+    - make clean-test
