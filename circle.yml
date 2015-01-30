@@ -4,6 +4,7 @@ machine:
 
 dependencies:
   pre:
+    - docker -v
     - ssh-keygen -t rsa -b 2048 -N "" -C "itamae" -f .ssh/id_rsa
     - docker build --rm -t osx-ci-agent .
 
