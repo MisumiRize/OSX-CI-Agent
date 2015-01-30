@@ -1,3 +1,6 @@
 include_recipe 'virtualbox.rb'
 include_recipe 'vagrant.rb'
 include_recipe 'ruby.rb'
+include_recipe 'mackerel.rb'
+include_recipe 'cron.rb'
+include_recipe 'user.rb'
