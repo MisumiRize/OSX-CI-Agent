@@ -19,7 +19,7 @@ build:
         code: ssh-keygen -t rsa -b 2048 -N "" -C "itamae" -f .ssh/id_rsa
     - script:
         name: docker build
-        code: docker build .
+        code: docker build --rm -t osx-ci-agent .
     - script:
         name: docker run
         code: docker run --privileged -d -p 42222:22 osx-ci-agent
