@@ -1,5 +1,5 @@
 require 'spec_helper'
 
-describe package('vagrant') do
+describe package('gcc') do
   it { should be_installed }
 end
