@@ -11,5 +11,6 @@ test:
   pre:
     - docker run -d -p 42222:22 osx-ci-agent
   override:
-    - bundle exec itamae ssh -h 0.0.0.0 -u root -p 42222 --key .ssh/id_rsa recipes/recipes.rb
+    - bundle exec itamae ssh -h 0.0.0.0 -u root -p 42222 --key .ssh/id_rsa recipes/recipes.rb:
+        timeout: 480
     - bundle exec rake spec
