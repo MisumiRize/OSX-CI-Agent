@@ -2,7 +2,14 @@ machine:
   services:
     - docker
 
+dependencies:
+  pre:
+    - ssh-keygen -t rsa -b 2048 -N "" -C "itamae" -f .ssh/id_rsa
+    - docker build --rm -t osx-ci-agent .
+
 test:
+  pre:
+    - docker run -d -p 42222:22 osx-ci-agent
   override:
-    - make clean-test:
-        timeout: 480
+    - bundle exec itamae ssh -h 0.0.0.0 -u root -p 42222 --key .ssh/id_rsa recipes/recipes.rb
+    - bundle exec rake spec
