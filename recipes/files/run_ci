@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby
+
+REPO = 'https://github.com/MisumiRize/dotfiles.git'
+
+def clean_up_old_boxes(rev)
+  stdouts = []
+  exit_codes = []
+  
+  `vagrant global-status | grep virtualbox | awk '{ print $1 }'`.chomp.each_line do |vm|
+    stdouts << `vagrant destroy #{vm} 2>&1`
+    exit_codes << $?.to_i
+  end
+  
+  status = exit_codes.any? { |e| e != 0 } ? 2 : 1
+  {
+    status: status,
+    project: 'Clean up old Vagrant boxes',
+    branch: 'master',
+    body: stdouts.join("\n"),
+    revision: rev,
+    repo: REPO,
+  }
+end
+
+def provision_new_box(rev)
+  stdout = `vagrant up base --provision 2>&1`
+  {
+    status: $?.to_i == 0 ? 1 : 2,
+    project: 'Provision new OSX Vagrant box',
+    branch: 'master',
+    body: stdout,
+    revision: rev,
+    repo: REPO,
+  }
+end
+
+def run_serverspec(rev)
+  stdout = `bundle exec rake spec:base`
+  `vagrant destroy`
+  {
+    status: $?.to_i == 0 ? 1 : 2,
+    project: 'Run Serverspec on OSX Vagrant box',
+    branch: 'master',
+    body: stdout,
+    revision: rev,
+    repo: REPO,
+  }
+end
+
+require 'faraday'
+
+conn = Faraday.new(url: ENV['UKIGUMO_SERVER_URL']) do |faraday|
+  faraday.request :url_encoded
+  faraday.adapter Faraday.default_adapter
+end
+
+target = File.expand_path('../dotfiles', Dir.getwd)
+
+`git clone #{REPO} #{target}` unless File.directory?(target)
+
+Dir.chdir(target)
+
+`git fetch && git checkout -f origin/master`
+`bundle install --path .bundle`
+revision = `git log | grep '^commit' | head -1 | awk '{print $2}'`.chomp
+
+result = clean_up_old_boxes(revision)
+conn.post '/api/v1/report/add', result
+exit if result[:status] == 2
+
+result = provision_new_box(revision)
+conn.post '/api/v1/report/add', result
