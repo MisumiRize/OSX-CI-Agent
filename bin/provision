@@ -1,5 +1,0 @@
-#!/bin/bash
-
-cd itamae
-bundle install
-bundle exec itamae local recipes/recipes.rb

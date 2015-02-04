@@ -1,6 +1,0 @@
-#!/bin/bash
-
-cd itamae
-bundle install
-bundle exec itamae local recipes/recipes.rb
-bundle exec rake spec

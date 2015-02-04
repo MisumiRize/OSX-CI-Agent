@@ -1,4 +1,0 @@
-#!/bin/bash
-
-cd itamae
-bundle exec rake spec
